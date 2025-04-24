@@ -1,0 +1,91 @@
+---
+import CircleExclamation from "./icons/CircleExclamation.astro";
+import TriangleExclamation from "./icons/TriangleExclamation.astro";
+
+---
+
+<div data-alert x-data x-cloak class="flex fixed top-0 left-0 right-0">
+    <div :class="$store.Alert.classList"
+        x-show="$store.Alert.active"
+        @click="$store.Alert.hide()"
+        x-transition:enter="scale-90 -translate-y-1/2"
+        x-transition:enter-start="scale-90 -translate-y-1/2"
+        x-transition:enter-end="scale-100 translate-y-0"
+        x-transition:leave.duration.100ms
+        x-transition:leave="scale-100 translate-y-0"
+        x-transition:leave-start="scale-100 translate-y-0"
+        x-transition:leave-end="scale-90 -translate-y-full"
+    >
+
+        <template x-if="$store.Alert.type === 'default'">
+            <CircleExclamation class="text-2xl m-auto w-1/6" />
+        </template>
+
+        <template x-if="$store.Alert.type === 'error'">
+            <TriangleExclamation class="text-2xl m-auto w-1/6" />
+        </template>
+
+        <div class="w-5/6 ml-2">
+            <p x-text="$store.Alert.title" class="font-bold mb-2"></p>
+            <p x-text="$store.Alert.message"></p>
+        </div>
+</div>
+</div>
+
+<script>
+	import Alpine from 'alpinejs';
+
+	Alpine.store('Alert', {
+		active: false,
+        type: 'default',
+        originalClass: 'font-[650] flex flex-row w-2xs border rounded-lg mt-3 mx-auto p-2 shadow-lg/30 cursor-pointer transition-transform',
+        classList: '',
+        title: 'Information',
+        message: 'Message d\'information.',
+        styleUpdated: false,
+
+        setTitle(title: string = '') {
+            this.title = title;
+
+            return this;
+        },
+
+        setMessage(msg: string = '') {
+            this.message = msg;
+
+            return this;
+        },
+
+        setStyle(style: 'default'|'error' = 'default') {
+            type Types = {
+                default: string;
+                error: string;
+                [key: string]: string;
+            }
+
+            const types: Types = {
+                'default': ' text-white bg-white/60 border-white',
+                'error': ' text-red-500 bg-red-200 border-red-200',
+            };
+
+            this.type = style;
+            this.classList = this.originalClass + types[this.type];
+            this.styleUpdated = true;
+
+            return this;
+        },
+
+		show() {
+            if (!this.styleUpdated) this.setStyle(this.type);
+
+            this.active = true;
+        },
+
+        hide() {
+            this.active = false;
+            this.styleUpdated = false;
+            this.classList = this.originalClass;
+        }
+	});
+	
+</script>

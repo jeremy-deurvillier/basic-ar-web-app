@@ -1,0 +1,14 @@
+---
+const { animate, action } = Astro.props;
+
+---
+
+<button class="relative text-white bg-white/20 w-[48px] h-[48px] inline-flex border border-white rounded-full cursor-pointer" @click={ action }>
+    {
+        (animate)
+        ?<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-neutral-400 opacity-50"></span>
+        :null
+    }
+
+    <slot />
+</button>

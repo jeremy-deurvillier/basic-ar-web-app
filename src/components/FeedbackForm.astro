@@ -1,0 +1,131 @@
+---
+import ArrowLeft from "./icons/ArrowLeft.astro";
+import FaceFrown from "./icons/FaceFrown.astro";
+import FaceMeh from "./icons/FaceMeh.astro";
+import FaceSmile from "./icons/FaceSmile.astro";
+
+---
+
+<section x-data x-cloak x-show="$store.FeedbackForm.open" class="text-black bg-white fixed bottom-0 left-0 w-screen rounded-t-xl" 
+    x-transition:enter="transition-transform scale-90 translate-y-1/2"
+    x-transition:enter-start="scale-90 translate-y-1/2"
+    x-transition:enter-end="scale-100 translate-y-0"
+    x-transition:leave.duration.200ms
+    x-transition:leave="transition-transform scale-100 translate-y-0"
+    x-transition:leave-start="scale-100 translate-y-0"
+    x-transition:leave-end="scale-90 translate-y-full"
+>
+    <div class="rounded-t-xl">
+        <div class="bg-neutral-300 h-1.5 w-12 rounded-lg m-auto my-3"></div>
+
+        <div class="relative flex justify-center mb-3">
+            <button 
+                class="fixed left-5 cursor-pointer translate-y-1/4" 
+                @click="$store.FeedbackForm.hide()"
+            >
+                <ArrowLeft class="text-xl m-auto mr-5" />
+            </button>
+
+            <h3 class="font-bold text-xl">Feedback</h3>
+        </div>
+
+        <hr class="border-neutral-300 mb-2" />
+    </div>
+
+    <article class="m-3">
+        <p>
+            Tout s'est bien passé ? Vous avez rencontré un problème ? Dites-le-nous !
+        </p>
+    </article>
+
+    <form method="post" action="/api/feedback/new" id="feedback-form" 
+        x-data 
+        @submit.prevent="$store.FeedbackForm.send()" 
+    >
+        <article class="font-medium text-lg m-3">
+            <p>
+                <span class="inline-block mb-1">Comment s'est passée votre expérience ?</span>
+
+                <span class="text-neutral-400 flex mb-2">
+                    <label for="smile" class="flex cursor-pointer">
+                        <input type="radio" id="smile" name="mood" value="smile" 
+                            class="mr-2 hidden peer/smile" 
+                            x-model="$store.FeedbackForm.mood" 
+                            @change="$store.FeedbackForm.setButtonState()"
+                            />
+                        <FaceSmile class="text-2xl mr-5 peer-checked/smile:text-emerald-600" />
+                    </label>
+                    <label for="poker" class="flex cursor-pointer">
+                        <input type="radio" id="poker" name="mood" value="poker" 
+                            class="mr-2 hidden peer/poker" 
+                            x-model="$store.FeedbackForm.mood" 
+                            @change="$store.FeedbackForm.setButtonState()"
+                        />
+                        <FaceMeh class="text-2xl mr-5 peer-checked/poker:text-yellow-600" />
+                    </label>
+                    <label for="sad" class="flex cursor-pointer">
+                        <input type="radio" id="sad" name="mood" value="sad" 
+                            class="mr-2 hidden peer/sad" 
+                            x-model="$store.FeedbackForm.mood" 
+                            @change="$store.FeedbackForm.setButtonState()"
+                        />
+                        <FaceFrown class="text-2xl mr-5 peer-checked/sad:text-red-600" />
+                    </label>
+                </span>
+
+                <label for="message" class="inline-block mb-1">Un message à ajouter ?</label>
+                <textarea 
+                    id="message" 
+                    name="message" 
+                    class="w-full border border-neutral-300 rounded-lg mb-4 p-2" 
+                    placeholder="Partagez votre retour d'expérience !"
+                    rows="3" 
+                ></textarea>
+            </p>
+
+            <button 
+                type="submit" 
+                id="feedback-form-submit" 
+                class="font-bold text-lg text-white bg-black flex w-full justify-center border-2 border-black rounded-lg mx-auto mb-2 px-4 py-2 cursor-pointer disabled:text-neutral-300 disabled:border-neutral-300 disabled:bg-transparent disabled:cursor-default" 
+            >
+                Envoyer
+            </button>
+        </article>
+    </form>
+</section>
+
+<script>
+    import Alpine from 'alpinejs';
+
+    Alpine.store('FeedbackForm', {
+        open: false,
+        mood: '',
+
+        init() {
+            this.setButtonState();
+        },
+
+        display() {
+            Alpine.store('BottomSheets').hide();
+            this.open = true;
+        },
+
+        hide() {
+            this.open = false;
+        },
+
+        setButtonState() {
+            (this.mood !== '')
+            ?document.querySelector('#feedback-form-submit')?.removeAttribute('disabled')
+            :document.querySelector('#feedback-form-submit')?.setAttribute('disabled', 'true');
+        },
+
+        send() {
+            const feedbackForm = document.querySelector('#feedback-form');
+            const data = new FormData(feedbackForm);
+
+            // TODO : fetch to API
+            console.log(data);
+        },
+    });
+</script>

@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/ARLayout.astro';
+import CameraInformation from '../components/CameraInformation.astro';
+import FloatingButton from '../components/FloatingButton.astro';
+import Menu from '../components/icons/Menu.astro';
+import CircleInfo from '../components/icons/CircleInfo.astro';
+import Alert from '../components/Alert.astro';
+import BottomSheets from '../components/BottomSheets.astro';
+
+---
+
+<Layout>
+	<h1 class="hidden">Basic Augmented Reality Web App</h1>
+
+	<iframe 
+		allow="camera; fullscreen" 
+		id="ar-experience" 
+		class="w-screen h-screen z-index-[900]"
+		x-data 
+		x-cloak 
+		x-show="$store.Iframe.show"
+	>
+	</iframe>
+
+	<CameraInformation />
+
+	<div x-data x-show="$store.InfosPlus.visible" class="flex flex-col fixed bottom-6 right-6 gap-6 z-index-[1000]">
+		<FloatingButton animate action="$store.BottomSheets.display()">
+			<CircleInfo class="text-xl m-auto" />
+		</FloatingButton>
+	</div>
+
+	<BottomSheets />
+
+	<Alert />
+</Layout>
+
+<script>
+	import Alpine from 'alpinejs';
+
+	Alpine.store('InfosPlus', {
+		visible: false,
+
+		makeVisible() {
+			this.visible = true;
+		},
+	});
+
+	Alpine.store('Demo', {
+		launch() {
+			Alpine.store('Alert')
+			.setTitle('Information')
+			.setMessage('Filme le QR code et découvre l\'objet caché !')
+			.show();
+		}
+	});
+
+	Alpine.store('Iframe', {
+		url: 'ar.html',
+		show: false,
+
+		init() {
+			this.start();
+		},
+
+		start() {
+			const validate = Alpine.store('CameraInformation').validate;
+
+			if (validate) {
+				document.querySelector('#ar-experience')?.setAttribute('src', this.url);
+				this.show = true;
+			}
+		}
+	});
+
+	Alpine.store('BottomSheets', {
+		open: false,
+		
+		display() {
+			this.open = true;
+		},
+		
+		hide() {
+			this.open = false;
+		}
+	});
+
+	window.addEventListener("message", function (event) {
+		if (event.origin !== window.location.origin) return;
+
+		if (event.data.type === "arjs-video-loaded") {
+			Alpine.store('Demo').launch();
+		}
+
+		if (event.data.type === "camera-error") {
+			Alpine.store('Alert')
+			.setTitle('Oups !')
+			.setMessage('Une erreur s\'est produite lors de l\'activation de la caméra.')
+			.setStyle('error')
+			.show();
+		}
+
+		if (event.data.type === "marker-found") {
+			Alpine.store('InfosPlus').makeVisible();
+		}
+
+		/*if (event.data.type === "object-clicked") {
+			Alpine.store('Alert')
+			.setTitle('Vous avez gagné ?')
+			.setMessage('N\'oubliez pas de vous enregister, pour obtenir votre gain !')
+			.setStyle('default')
+			.show();
+		}*/
+	});
+	
+	Alpine.start();
+</script>

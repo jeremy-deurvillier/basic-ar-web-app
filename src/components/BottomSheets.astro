@@ -1,0 +1,38 @@
+---
+import ArrowLeft from "./icons/ArrowLeft.astro";
+
+---
+
+<div x-data x-cloak class="bg-white h-[50vh] min-h-[340px] rounded-t-xl fixed bottom-0 left-0 right-0"
+    x-show="$store.BottomSheets.open"
+    x-transition:enter="transition-transform scale-90 translate-y-1/2"
+    x-transition:enter-start="scale-90 translate-y-1/2"
+    x-transition:enter-end="scale-100 translate-y-0"
+    x-transition:leave.duration.200ms
+    x-transition:leave="transition-transform scale-100 translate-y-0"
+    x-transition:leave-start="scale-100 translate-y-0"
+    x-transition:leave-end="scale-90 translate-y-full"
+>
+    <div class="rounded-t-xl">
+        <div class="bg-neutral-300 h-1.5 w-12 rounded-lg m-auto my-3"></div>
+
+        <div class="relative flex justify-center mb-3">
+            <button 
+                class="fixed left-5 cursor-pointer translate-y-1/4" 
+                @click="$store.BottomSheets.hide()"
+            >
+                <ArrowLeft class="text-xl m-auto mr-5" />
+            </button>
+
+            <h3 class="font-bold text-xl">Informations</h3>
+        </div>
+
+        <hr class="border-neutral-300 mb-2" />
+    </div>
+
+    <article class="m-3 flex flex-col">
+        <p class="flex-grow">
+            Texte à ajouter ...
+        </p>
+    </article>
+</div>

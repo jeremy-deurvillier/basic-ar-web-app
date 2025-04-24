@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-nunito: "Nunito", sans-serif; 
+    --shadow-top: 0 0 25px rgba(0, 0, 0, 0.25);
+}
+
+html {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+[x-cloak] {
+    display: none;
+}

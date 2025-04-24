@@ -1,0 +1,77 @@
+---
+---
+
+<div 
+    class="text-black bg-white w-screen h-screen flex flex-col justify-between z-index-[1050] transition-transform"
+    x-data 
+    x-cloak 
+    x-show="$store.CameraInformation.show" 
+    x-transition:enter="delay-200 scale-90"
+    x-transition:enter-start="delay-200 scale-90"
+    x-transition:enter-end="delay-200 scale-100"
+    x-transition:leave.duration.100ms
+    x-transition:leave="scale-100 translate-x-0"
+    x-transition:leave-start="scale-100 translate-x-0"
+    x-transition:leave-end="scale-90 -translate-x-full"
+>
+    <article class="overflow-y-auto p-4">
+        <h2 class="text-xl text-center underline mb-8">
+            Information d'accès caméra
+        </h2>
+        <p class="text-justify mb-4">
+            Vous allez vivre une expérience de réalité augmentée. 
+            L'écran suivant vous demande l'accès à votre caméra. 
+            Autorisez l'accès, puis filmez le QR code que vous venez de scanner.
+        </p>
+        <p class="text-justify mb-4">Amusez-vous !</p>
+    </article>
+
+    <p class="flex shadow-top p-4">
+        <button id="continue-button" 
+            class="font-bold text-lg uppercase inline-block mx-auto cursor-pointer hover:underline disabled:text-neutral-300 disabled:cursor-default"
+            x-data 
+            @click="$store.CameraInformation.close()"
+        >
+            Jouer
+        </button>
+    </p>
+</div>
+
+<script>
+    import Alpine from 'alpinejs';
+
+    Alpine.store('CameraInformation', {
+        show: false,
+        validate: false,
+        storageItemName: 'cameraInformation',
+
+        init() {
+            const validateValue = window.localStorage.getItem(this.storageItemName);
+            const isValidate = validateValue !== null && validateValue === 'true';
+
+            if (isValidate) {
+                this.validate = true;
+            } else {
+                this.show = true;
+                this.updateStorage('false');
+            }
+        },
+
+        updateStorage(newValue: string) {
+            window.localStorage.setItem(this.storageItemName, newValue);
+        },
+
+        open() {
+            (!this.validate)
+            ?this.show = true
+            :Alpine.store('Iframe').start();
+        },
+
+        close() {
+            this.validate = true;
+            this.show = false;
+            this.updateStorage('true');
+            Alpine.store('Iframe').start();
+        }
+    });
+</script>
